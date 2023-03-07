@@ -196,7 +196,6 @@
                                 </a>
                             </li>
                         @endcan
-
                         @if(Auth::user()->hasRole('Super Admin'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('holiday.create-bulk-data') }}">

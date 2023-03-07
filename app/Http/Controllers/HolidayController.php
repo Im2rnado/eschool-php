@@ -178,7 +178,7 @@ class HolidayController extends Controller
         }
         $offset = 0;
         $limit = 10;
-        $sort = 'id';
+        $sort = 'id';{
         $order = 'DESC';
         
         if (isset($_GET['offset']))
