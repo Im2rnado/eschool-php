@@ -24,6 +24,7 @@ class HolidayController extends Controller
             );
             return redirect(route('home'))->withErrors($response);
         }
+        $category = Category::where('status', 1)->get();
         return view('holiday.index');
     }
     
