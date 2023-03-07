@@ -200,7 +200,7 @@
                         @if(Auth::user()->hasRole('Super Admin'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('holiday.create-bulk-data') }}">
-                                    {{ __('holiday_add_bulk_data') }}
+                                    {{ __('add_bulk_data') }}
                                 </a>
                             </li>
                         @endif

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-{{ __('holiday_add_bulk_data') }}
+{{ __('add_bulk_data') }}
 @endsection
 
 @section('content')
