@@ -184,9 +184,28 @@
         {{-- Holiday --}}
         @canany(['holiday-create','holiday-list'])
             <li class="nav-item">
-                @can('holiday-list')
-                    <a href="{{ route('holiday.index') }}" class="nav-link"> <span class="menu-title">{{ __('holiday_list') }}</span> <i class="fa fa-calendar-check-o menu-icon"></i> </a>
-                @endcan
+                <a class="nav-link" data-toggle="collapse" href="#holiday-menu" aria-expanded="false" aria-controls="academics-menu"> <span class="menu-title">{{ __('holiday_list') }}</span>
+
+                    <i class="fa fa-calendar-check-o menu-icon"></i> </a>
+                <div class="collapse" id="holiday-menu">
+                    <ul class="nav flex-column sub-menu">
+                        @can('holiday-list')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('holiday.index') }}">
+                                    {{ __('holiday_list') }}
+                                </a>
+                            </li>
+                        @endcan
+
+                        @if(Auth::user()->hasRole('Super Admin'))
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('holiday.create-bulk-data') }}">
+                                    {{ __('holiday_add_bulk_data') }}
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
             </li>
         @endcanany
 
@@ -268,7 +287,7 @@
                 </div>
             </li>
         @endcanany
-        {{-- announceent --}}
+        {{-- announcement --}}
         @can('announcement-create')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('announcement.index') }}">

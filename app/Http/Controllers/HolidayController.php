@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Holiday;
+use App\Imports\HolidayImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -67,6 +68,51 @@ class HolidayController extends Controller
             $response = array(
                 'error' => true,
                 'message' => trans('error_occurred')
+            );
+        }
+        return response()->json($response);
+    }
+
+    public function createBulkData()
+    {
+        if (!Auth::user()->can('holiday-create')) {
+            $response = array(
+                'message' => trans('no_permission_message')
+            );
+            return redirect(route('home'))->withErrors($response);
+        }
+        return view('holiday.add_bulk_data');
+    }
+
+    public function storeBulkData(Request $request)
+    {
+        if (!Auth::user()->can('holiday-create') || !Auth::user()->can('holiday-edit')) {
+            $response = array(
+                'message' => trans('no_permission_message')
+            );
+            return response()->json($response);
+        }
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:csv'
+        ]);
+        if ($validator->fails()) {
+            $response = array(
+                'error' => true,
+                'message' => $validator->errors()->first()
+            );
+            return response()->json($response);
+        }
+        try {
+            Excel::import(new HolidayImport(), $request->file);
+            $response = [
+                'error' => false,
+                'message' => trans('data_store_successfully')
+            ];
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $response = array(
+                'error' => true,
+                'message' => trans('error_occurred'),
+                'data' => $e->failures()
             );
         }
         return response()->json($response);

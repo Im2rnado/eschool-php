@@ -49,7 +49,7 @@ class SystemUpdateController extends Controller
         $app_url = (string)url('/');
         $app_url = preg_replace('#^https?://#i', '', $app_url);
 
-        $curl = curl_init();
+        /* $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://wrteam.in/validator/eschool_validator?purchase_code=' . $request->purchase_code . '&domain_url=' . $app_url . '',
             CURLOPT_RETURNTRANSFER => true,
@@ -69,7 +69,7 @@ class SystemUpdateController extends Controller
                 'info' => $info
             );
             return response()->json($response);
-        } else {
+        } else { */
             if (!is_dir($this->destinationPath)) {
                 mkdir($this->destinationPath, 0777, TRUE);
             }
@@ -167,7 +167,6 @@ class SystemUpdateController extends Controller
                 );
                 return response()->json($response);
             }
-        }
-
+        // }
     }
 }

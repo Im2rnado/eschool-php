@@ -255,6 +255,7 @@
     "all": "All",
     "select_teacher": "Select Teacher",
     "student_bulk_import": "Student Bulk import",
+    "holiday_bulk_import": "Holiday Bulk import",
     "grade": "Grade",
     "starting_range": "Starting Range",
     "ending_range": "Ending Range",
