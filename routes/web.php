@@ -159,8 +159,8 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
         Route::resource('holiday', HolidayController::class);
         Route::get('holiday-list', [HolidayController::class, 'show'])->name('holiday.list');
         Route::get('holiday-view', [HolidayController::class, 'holiday_view'])->name('holiday.view');
-        Route::get('holiday/create_bulk', [HolidayController::class, 'createBulkData'])->name('holiday.create-bulk-data');
-        Route::post('holiday/store_bulk', [HolidayController::class, 'storeBulkData'])->name('holiday.store-bulk-data');
+        Route::get('holiday-create_bulk', [HolidayController::class, 'createBulkData'])->name('holiday.create-bulk-data');
+        Route::post('holiday-store_bulk', [HolidayController::class, 'storeBulkData'])->name('holiday.store-bulk-data');
         
 
         Route::resource('assignment', AssignmentController::class);
