@@ -118,7 +118,7 @@ class ApiController extends Controller
     public function getSettings(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'type' => 'required|in:privacy_policy,contact_us,about_us,terms_condition,app_settings,fees_settings',
+            'type' => 'required|in:privacy_policy,school_policy,contact_us,about_us,terms_condition,app_settings,fees_settings',
         ]);
 
         if ($validator->fails()) {

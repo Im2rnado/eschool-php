@@ -308,6 +308,14 @@ class SettingController extends Controller
         return view('settings.privacy_policy', compact('settings', 'type'));
     }
 
+    public function school_policy_index()
+    {
+
+        $settings = Settings::where('type', 'school_policy')->first();
+        $type = 'school_policy';
+        return view('settings.school_policy', compact('settings', 'type'));
+    }
+
     public function contact_us_index()
     {
 

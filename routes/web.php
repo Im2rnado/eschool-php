@@ -203,6 +203,7 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
         Route::post('verify-email-settings', [SettingController::class, 'verifyEmailConfigration'])->name('setting.varify-email-config');
 
         Route::get('privacy-policy', [SettingController::class, 'privacy_policy_index']);
+        Route::get('school-policy', [SettingController::class, 'school_policy_index']);
         Route::get('terms-condition', [SettingController::class, 'terms_condition_index']);
         Route::get('contact-us', [SettingController::class, 'contact_us_index']);
         Route::get('about-us', [SettingController::class, 'about_us_index']);
@@ -291,6 +292,10 @@ Route::post('webhook/stripe', [WebhookController::class, 'stripe']);
 Route::get('page/privacy-policy', function () {
     $settings = getSettings('privacy_policy');
     echo $settings['privacy_policy'];
+});
+Route::get('page/school-policy', function () {
+    $settings = getSettings('school_policy');
+    echo $settings['school_policy'];
 });
 Route::get('clear', function () {
     Artisan::call('view:clear');

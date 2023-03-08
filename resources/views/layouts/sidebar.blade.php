@@ -421,7 +421,7 @@
             </li>
         @endcan
         {{-- settings --}}
-        @canany(['setting-create','fcm-setting-create','email-setting-create','privacy-policy','contact-us','about-us','role-create'])
+        @canany(['setting-create','fcm-setting-create','email-setting-create','privacy-policy','school-policy','contact-us','about-us','role-create'])
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#settings-menu" aria-expanded="false" aria-controls="settings-menu"> <span class="menu-title">{{ __('system_settings') }}</span> <i class="fa fa-cog menu-icon"></i> </a>
                 <div class="collapse" id="settings-menu">
@@ -467,6 +467,13 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('privacy-policy') }}">
                                     {{ __('privacy_policy') }}
+                                </a>
+                            </li>
+                        @endcan
+                        @can('school-policy')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('school-policy') }}">
+                                    {{ __('school_policy') }}
                                 </a>
                             </li>
                         @endcan
