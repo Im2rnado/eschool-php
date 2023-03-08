@@ -470,7 +470,7 @@
                                 </a>
                             </li>
                         @endcan
-                        @can('school-policy')
+                        @can('privacy-policy')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('school-policy') }}">
                                     {{ __('school_policy') }}
