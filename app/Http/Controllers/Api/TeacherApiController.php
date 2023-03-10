@@ -18,6 +18,7 @@ use App\Models\ExamMarks;
 use App\Models\Timetable;
 use App\Models\Assignment;
 use App\Models\Attendance;
+use App\Models\Behavior;
 use App\Models\ClassSchool;
 use App\Models\LessonTopic;
 use Illuminate\Support\Arr;
@@ -322,7 +323,8 @@ class TeacherApiController extends Controller
             $assignment->subject_id = $request->subject_id;
             $assignment->name = $request->name;
             $assignment->instructions = $request->instructions;
-            $assignment->due_date = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');;
+            $assignment->due_date = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');
+            ;
             $assignment->points = $request->points;
             if ($request->resubmission) {
                 $assignment->resubmission = 1;
@@ -1688,6 +1690,59 @@ class TeacherApiController extends Controller
         }
     }
 
+    public function getBehavior(Request $request)
+    {
+
+
+        if (!Auth::user()->can('behavior-list')) {
+            $response = array(
+                'message' => trans('no_permission_message')
+            );
+            return response()->json($response);
+        }
+
+        $student_id = $request->student_id;
+        $teacher_name = $request->teacher_name;
+
+        $validator = Validator::make($request->all(), [
+            'student_id' => 'required',
+            'teacher_name' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $response = array(
+                'error' => true,
+                'message' => $validator->errors()->first()
+            );
+            return response()->json($response);
+        }
+        try {
+            $sql = Behavior::where('teacher_name', $teacher_name)->where('student_id', $student_id);
+
+            $data = $sql->get();
+
+            if ($data->count()) {
+                $response = array(
+                    'error' => false,
+                    'data' => $data,
+                    'message' => "Data Fetched Successfully",
+                );
+            } else {
+                $response = array(
+                    'error' => false,
+                    'data' => $data,
+                    'message' => "No Behavior Recorded",
+                );
+            }
+            return response()->json($response);
+        } catch (\Throwable $e) {
+            $response = array(
+                'error' => true,
+                'message' => trans('error_occurred'),
+                'data' => $e
+            );
+        }
+    }
+
 
     public function submitAttendance(Request $request)
     {
@@ -1747,6 +1802,61 @@ class TeacherApiController extends Controller
                     'message' => trans('data_store_successfully')
                 ];
             }
+        } catch (Exception $e) {
+            $response = array(
+                'error' => true,
+                'message' => trans('error_occurred'),
+                'data' => $e
+
+            );
+        }
+        return response()->json($response);
+    }
+
+    public function submitBehavior(Request $request)
+    {
+        if (!Auth::user()->can('behavior-create') || !Auth::user()->can('behavior-edit')) {
+            $response = array(
+                'error' => true,
+                'message' => trans('no_permission_message')
+            );
+            return response()->json($response);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'student_id' => 'required',
+            'teacher_name' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $response = array(
+                'error' => true,
+                'message' => $validator->errors()->first()
+
+            );
+            return response()->json($response);
+        }
+        try {
+            $student_id = $request->student_id;
+            $teacher_name = $request->teacher_name;
+            $name = $request->name;
+            $description = $request->description;
+
+
+            $behavior = new Behavior();
+
+            $behavior->teacher_name = $teacher_name;
+            $behavior->student_id = $student_id;
+            $behavior->name = $name;
+            $behavior->description = $description;
+
+            $behavior->save();
+
+            $response = [
+                'error' => false,
+                'message' => trans('data_store_successfully')
+            ];
         } catch (Exception $e) {
             $response = array(
                 'error' => true,
@@ -2136,15 +2246,23 @@ class TeacherApiController extends Controller
             $teacher_id = Auth::user()->teacher->id;
             $class_data = ClassSection::where('class_teacher_id', $teacher_id)->with('class.medium', 'section')->get()->first();
 
-            $exam_marks_db = ExamClass::with(['exam.timetable' => function ($q) use ($request, $class_data) {
-                $q->where('class_id', $class_data->class_id)->with(['exam_marks' => function ($q) use ($request) {
-                    $q->where('student_id', $request->student_id);
-                }])->with('subject:id,name,type,image,code');
-            }])->with(['exam.results' => function ($q) use ($request) {
-                $q->where('student_id', $request->student_id)->with(['student' => function ($q) {
-                    $q->select('id', 'user_id', 'roll_number')->with('user:id,first_name,last_name');
-                }])->with('session_year:id,name');
-            }])->where('class_id', $class_data->class_id)->get();
+            $exam_marks_db = ExamClass::with([
+                'exam.timetable' => function ($q) use ($request, $class_data) {
+                    $q->where('class_id', $class_data->class_id)->with([
+                        'exam_marks' => function ($q) use ($request) {
+                                $q->where('student_id', $request->student_id);
+                            }
+                    ])->with('subject:id,name,type,image,code');
+                }
+            ])->with([
+                    'exam.results' => function ($q) use ($request) {
+                        $q->where('student_id', $request->student_id)->with([
+                            'student' => function ($q) {
+                                        $q->select('id', 'user_id', 'roll_number')->with('user:id,first_name,last_name');
+                                    }
+                        ])->with('session_year:id,name');
+                    }
+                ])->where('class_id', $class_data->class_id)->get();
 
             if (sizeof($exam_marks_db)) {
                 foreach ($exam_marks_db as $data_db) {
@@ -2183,7 +2301,7 @@ class TeacherApiController extends Controller
                                         );
                                     }
                                 } else {
-                                    $exam_marks = (object)[];
+                                    $exam_marks = (object) [];
                                 }
 
                                 $marks_array[] = array(
@@ -2213,7 +2331,8 @@ class TeacherApiController extends Controller
                                     );
                                 }
                             } else {
-                                $exam_result = (object)[];;
+                                $exam_result = (object) [];
+                                ;
                             }
                             $data[] = array(
                                 'exam_id' => $data_db->exam_id,
@@ -2266,11 +2385,15 @@ class TeacherApiController extends Controller
             $teacher_id = Auth::user()->teacher->id;
             $class_data = ClassSection::where('class_teacher_id', $teacher_id)->with('class.medium', 'section')->get()->first();
 
-            $exam_marks_db = ExamClass::with(['exam.timetable' => function ($q) use ($request, $class_data) {
-                $q->where('class_id', $class_data->class_id)->with(['exam_marks' => function ($q) use ($request) {
-                    $q->where('student_id', $request->student_id);
-                }])->with('subject:id,name,type,image');
-            }])->where('class_id', $class_data->class_id)->get();
+            $exam_marks_db = ExamClass::with([
+                'exam.timetable' => function ($q) use ($request, $class_data) {
+                    $q->where('class_id', $class_data->class_id)->with([
+                        'exam_marks' => function ($q) use ($request) {
+                                $q->where('student_id', $request->student_id);
+                            }
+                    ])->with('subject:id,name,type,image');
+                }
+            ])->where('class_id', $class_data->class_id)->get();
 
             if (sizeof($exam_marks_db)) {
                 foreach ($exam_marks_db as $data_db) {
@@ -2472,9 +2595,11 @@ class TeacherApiController extends Controller
             $teacher = Auth::user()->teacher;
             $teacher_class = ClassSection::with('class')->where('class_teacher_id', $teacher->id)->first();
             $class_id = $teacher_class->class->id;
-            $exam_data = Exam::with(['timetable' => function ($q) use ($request, $class_id) {
-                $q->where(['exam_id' => $request->exam_id, 'class_id' => $class_id])->with('subject');
-            }])->where('id', $request->exam_id)->get();
+            $exam_data = Exam::with([
+                'timetable' => function ($q) use ($request, $class_id) {
+                    $q->where(['exam_id' => $request->exam_id, 'class_id' => $class_id])->with('subject');
+                }
+            ])->where('id', $request->exam_id)->get();
             $response = array(
                 'error' => false,
                 'data' => $exam_data,

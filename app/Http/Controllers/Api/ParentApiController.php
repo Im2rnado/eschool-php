@@ -19,6 +19,7 @@ use App\Models\FeesClass;
 use App\Models\Timetable;
 use App\Models\Assignment;
 use App\Models\Attendance;
+use App\Models\Behavior;
 use App\Models\ExamResult;
 use App\Models\OnlineExam;
 use App\Models\LessonTopic;
@@ -1744,5 +1745,43 @@ class ParentApiController extends Controller
             );
         }
         return response()->json($response,200,[],JSON_PRESERVE_ZERO_FRACTION);
+    }
+
+    public function getBehavior(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'child_id' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            $response = array(
+                'error' => true,
+                'message' => $validator->errors()->first(),
+                'code' => 102,
+            );
+            return response()->json($response);
+        }
+        try {
+            $user = $request->user();
+            $children = $user->parent->children()->where('id', $request->child_id)->first();
+
+            $behavior = Behavior::where('student_id', $children->id);
+
+            $behavior = $behavior->get();
+
+            $response = array(
+                'error' => false,
+                'message' => "Behavior Fetched Successfully",
+                'data' => ['behavior' => $behavior],
+                'code' => 200,
+            );
+        } catch (\Exception $e) {
+            $response = array(
+                'error' => true,
+                'message' => trans('error_occurred'),
+                'code' => 103,
+            );
+        }
+        return response()->json($response);
     }
 }

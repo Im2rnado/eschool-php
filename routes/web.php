@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BehaviorController;
 use App\Models\Grade;
 use App\Models\ExamTimetable;
 use Illuminate\Support\Facades\Auth;
@@ -116,9 +117,9 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
         Route::resource('students', StudentController::class);
 
         //student generate roll number
-        Route::get('student/assign-roll-number',[StudentController::class, 'indexStudentRollNumber'])->name('students.index-students-roll-number');
-        Route::get('student/list-assign-roll-number',[StudentController::class, 'listStudentRollNumber'])->name('students.list-students-roll-number');
-        Route::post('student/store-roll-number',[StudentController::class, 'storeStudentRollNumber'])->name('students.store-roll-number');
+        Route::get('student/assign-roll-number', [StudentController::class, 'indexStudentRollNumber'])->name('students.index-students-roll-number');
+        Route::get('student/list-assign-roll-number', [StudentController::class, 'listStudentRollNumber'])->name('students.list-students-roll-number');
+        Route::post('student/store-roll-number', [StudentController::class, 'storeStudentRollNumber'])->name('students.store-roll-number');
 
         Route::resource('category', CategoryController::class);
         Route::get('category_list', [CategoryController::class, 'show']);
@@ -161,7 +162,7 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
         Route::get('holiday-view', [HolidayController::class, 'holiday_view'])->name('holiday.view');
         Route::get('holiday-create_bulk', [HolidayController::class, 'createBulkData'])->name('holiday.create-bulk-data');
         Route::post('holiday-store_bulk', [HolidayController::class, 'storeBulkData'])->name('holiday.store-bulk-data');
-        
+
 
         Route::resource('assignment', AssignmentController::class);
         Route::get('assignment-submission', [AssignmentController::class, 'viewAssignmentSubmission'])->name('assignment.submission');
@@ -212,7 +213,8 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
 
         Route::get('reset-password', function () {
             return view('students.reset_password');
-        })->name('students.reset_password');
+        }
+        )->name('students.reset_password');
         Route::get('reset-password-list', [StudentController::class, 'reset_password']);
         Route::post('student-change-password', [StudentController::class, 'change_password']);
 
@@ -258,31 +260,35 @@ Route::group(['middleware' => ['Role', 'auth']], function () {
         Route::get('fees/paid/receipt-pdf/{id}', [FeesTypeController::class, 'feesPaidReceiptPDF'])->name('fees.paid.receipt.pdf');
         Route::get('fees/fees-receipt', function () {
             return view('fees.fees_receipt');
-        })->name('fees.receipt');
+        }
+        )->name('fees.receipt');
 
+        Route::resource('behavior', BehaviorController::class);
+        Route::get('getBehaviorData', [BehaviorController::class, 'getBehaviorData']);
 
         // Online Exam
-        Route::get('online-exam/terms-conditions',[OnlineExamController::class ,'onlineExamTermsConditionIndex'])->name('online-exam.terms-conditions');
-        Route::post('online-exam/store-terms-conditions',[OnlineExamController::class ,'storeOnlineExamTermsCondition'])->name('online-exam.store-terms-conditions');
+        Route::get('online-exam/terms-conditions', [OnlineExamController::class, 'onlineExamTermsConditionIndex'])->name('online-exam.terms-conditions');
+        Route::post('online-exam/store-terms-conditions', [OnlineExamController::class, 'storeOnlineExamTermsCondition'])->name('online-exam.store-terms-conditions');
 
         Route::resource('online-exam', OnlineExamController::class);
-        Route::post('online-exam/add-new-question',[OnlineExamController::class ,'storeExamQuestionChoices'])->name('online-exam.add-new-question');
-        Route::get('online-exam/get-class-subject-questions/{id}',[OnlineExamController::class ,'getClassSubjectQuestions'])->name('online-exam-question.get-class-subject-questions');
-        Route::get('get-subject-online-exam',[OnlineExamController::class ,'getSubjects']);
-        Route::get('get-exam-question-index',[OnlineExamController::class ,'examQuestionsIndex'])->name('exam.questions.index');
-        Route::post('online-exam/store-questions-choices',[OnlineExamController::class ,'storeQuestionsChoices'])->name('online-exam.store-choice-question');
-        Route::delete('online-exam/remove-choiced-question/{id}',[OnlineExamController::class ,'removeQuestionsChoices'])->name('online-exam.remove-choice-question');
+        Route::post('online-exam/add-new-question', [OnlineExamController::class, 'storeExamQuestionChoices'])->name('online-exam.add-new-question');
+        Route::get('online-exam/get-class-subject-questions/{id}', [OnlineExamController::class, 'getClassSubjectQuestions'])->name('online-exam-question.get-class-subject-questions');
+        Route::get('get-subject-online-exam', [OnlineExamController::class, 'getSubjects']);
+        Route::get('get-exam-question-index', [OnlineExamController::class, 'examQuestionsIndex'])->name('exam.questions.index');
+        Route::post('online-exam/store-questions-choices', [OnlineExamController::class, 'storeQuestionsChoices'])->name('online-exam.store-choice-question');
+        Route::delete('online-exam/remove-choiced-question/{id}', [OnlineExamController::class, 'removeQuestionsChoices'])->name('online-exam.remove-choice-question');
 
         Route::resource('online-exam-question', OnlineExamQuestionController::class);
-        Route::delete('online-exam-question/remove-option/{id}', [OnlineExamQuestionController::class , 'removeOptions']);
-        Route::delete('online-exam-question/remove-answer/{id}', [OnlineExamQuestionController::class , 'removeAnswers']);
+        Route::delete('online-exam-question/remove-option/{id}', [OnlineExamQuestionController::class, 'removeOptions']);
+        Route::delete('online-exam-question/remove-answer/{id}', [OnlineExamQuestionController::class, 'removeAnswers']);
         // End Online Exam Routes
 
         Route::get('app-settings', [SettingController::class, 'app_index']);
         Route::post('app-settings', [SettingController::class, 'app_update']);
         Route::get('system-update', [SystemUpdateController::class, 'index'])->name('system-update.index');
         Route::post('system-update', [SystemUpdateController::class, 'update'])->name('system-update.update');
-    });
+    }
+    );
 });
 
 // webhooks

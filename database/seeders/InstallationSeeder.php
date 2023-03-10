@@ -17,7 +17,8 @@ class InstallationSeeder extends Seeder
      *
      * @return void
      */
-    public function run() {
+    public function run()
+    {
 
         //Add Permissions
         $permissions = [
@@ -172,6 +173,11 @@ class InstallationSeeder extends Seeder
 
             ['id' => 120, 'name' => 'manage-online-exam'],
 
+            ['id' => 121, 'name' => 'behavior-list'],
+            ['id' => 122, 'name' => 'behavior-create'],
+            ['id' => 123, 'name' => 'behavior-edit'],
+            ['id' => 124, 'name' => 'behavior-delete'],
+
         ];
         foreach ($permissions as $permission) {
             Permission::UpdateOrCreate(['id' => $permission['id']], $permission);
@@ -301,7 +307,12 @@ class InstallationSeeder extends Seeder
             'fees-type',
             'fees-classes',
             'fees-paid',
-            'fees-config'
+            'fees-config',
+
+            'behavior-list',
+            'behavior-create',
+            'behavior-edit',
+            'behavior-delete'
         ];
         $role->syncPermissions($superadmin_permission_list);
 
@@ -341,7 +352,11 @@ class InstallationSeeder extends Seeder
             'subject-teacher-list',
             'exam-upload-marks',
             'exam-result',
-            'manage-online-exam'
+            'manage-online-exam',
+            'behavior-list',
+            'behavior-create',
+            'behavior-edit',
+            'behavior-delete'
         ];
         $teacher_role->syncPermissions($teacher_permissions_list);
 
@@ -350,7 +365,7 @@ class InstallationSeeder extends Seeder
         Role::updateOrCreate(['name' => 'Student']);
 
         //Change system version here
-        Settings::updateOrCreate(['type' => 'system_version'],['message'=>'1.0.5']);
+        Settings::updateOrCreate(['type' => 'system_version'], ['message' => '1.0.5']);
 
         //clear cache
         Artisan::call('view:clear');
